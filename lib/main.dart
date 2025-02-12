@@ -1,5 +1,6 @@
 import "package:crash_app/crash.dart";
 import "package:firebase_core/firebase_core.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 
@@ -19,6 +20,15 @@ void main(List<String> args) async {
   } else {
     await Firebase.initializeApp();
   }
+
+  FlutterError.onError = (errorDetails) =>
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack);
+    return true;
+  };
+
   runApp(MyApp());
 }
 
